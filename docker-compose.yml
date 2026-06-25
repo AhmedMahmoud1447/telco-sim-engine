@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   # ==========================================
-  # 1️⃣ INFRASTRUCTURE SERVICES 
+  # 1️⃣ INFRASTRUCTURE SERVICES
   # ==========================================
   postgres:
     image: postgres:15-alpine
