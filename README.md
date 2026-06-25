@@ -2,7 +2,7 @@
 A high-performance, event-driven telecom engine built with Spring Boot & Java. Features real-time SIM provisioning, live network telemetry, and automated policy enforcement using Apache Kafka, Redis Distributed Locks, and JWT-secured Spring Cloud Gateway.
 
 ## 🏗️ Architectural Overview
-<img width="1536" height="1024" alt="ChatGPT Image 26 يونيو 2026، 01_04_41 ص" src="https://github.com/user-attachments/assets/6a71e723-8e07-4972-9e35-0a20e81cb46a" />
+![Uploading ChatGPT Image 26 يونيو 2026، 01_16_30 ص.png…]()
 
 ## Architecture Overview
 
