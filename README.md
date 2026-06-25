@@ -1,6 +1,8 @@
 # Telco SIM Provisioning & Dynamic Policy Enforcement Engine
 A high-performance, event-driven telecom engine built with Spring Boot & Java. Features real-time SIM provisioning, live network telemetry, and automated policy enforcement using Apache Kafka, Redis Distributed Locks, and JWT-secured Spring Cloud Gateway.
 
+**This project is a Proof of Concept (PoC) and an educational architectural prototype.**
+
 ## 🏗️ Architectural Overview
 <img width="1536" height="1024" alt="ChatGPT Image 26 يونيو 2026، 01_16_30 ص (1)" src="https://github.com/user-attachments/assets/991e2544-017c-4375-8282-9502eed1e5c9" />
 
