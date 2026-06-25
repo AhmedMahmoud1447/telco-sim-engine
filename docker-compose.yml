@@ -1,0 +1,141 @@
+version: '3.8'
+
+services:
+  # ==========================================
+  # 1️⃣ INFRASTRUCTURE SERVICES 
+  # ==========================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: telco-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: sim_provisioning_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - telco-network
+
+  redis:
+    image: redis:7.0-alpine
+    container_name: telco-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - telco-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.3.0
+    container_name: telco-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - telco-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.3.0
+    container_name: telco-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - telco-network
+
+  # ==========================================
+  # 2️⃣ CORE MICROSERVICES
+  # ==========================================
+
+  eureka-server:
+    build: ./eureka-server
+    container_name: telco-eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - telco-network
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: telco-api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - eureka-server
+    networks:
+      - telco-network
+
+  auth-service:
+    build: ./auth-service
+    container_name: telco-auth-service
+    ports:
+      - "8085:8085"
+    depends_on:
+      - eureka-server
+    networks:
+      - telco-network
+
+  sim-provisioning-service:
+    build: ./sim-provisioning-service
+    container_name: telco-sim-provisioning-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - eureka-server
+      - postgres
+      - redis
+      - kafka
+    networks:
+      - telco-network
+
+  telemetry-service:
+    build: ./telemetry-service
+    container_name: telco-telemetry-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - eureka-server
+      - kafka
+    networks:
+      - telco-network
+
+  policy-quota-service:
+    build: ./policy-quota-service
+    container_name: telco-policy-quota-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - eureka-server
+      - redis
+      - kafka
+    networks:
+      - telco-network
+
+  auto-healing-service:
+    build: ./auto-healing-service
+    container_name: telco-auto-healing-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      - eureka-server
+      - kafka
+    networks:
+      - telco-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  telco-network:
+    driver: bridge
